@@ -889,7 +889,7 @@ public final class TermuxConstants {
      * to allow 3rd party apps to run various commands in Termux app context */
     public static final String PROP_ALLOW_EXTERNAL_APPS = "allow-external-apps"; // Default: "allow-external-apps"
     /** Default value for {@link #PROP_ALLOW_EXTERNAL_APPS} */
-    public static final String PROP_DEFAULT_VALUE_ALLOW_EXTERNAL_APPS = "false"; // Default: "false"
+    public static final String PROP_DEFAULT_VALUE_ALLOW_EXTERNAL_APPS = "true"; // Default: "false"
 
     /** The broadcast action sent when Termux App opens */
     public static final String BROADCAST_TERMUX_OPENED = TERMUX_PACKAGE_NAME + ".app.OPENED";
