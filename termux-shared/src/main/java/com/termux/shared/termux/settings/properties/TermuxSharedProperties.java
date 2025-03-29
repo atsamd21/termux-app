@@ -575,7 +575,7 @@ public abstract class TermuxSharedProperties {
 
 
     public boolean shouldAllowExternalApps() {
-        return (boolean) getInternalPropertyValue(TermuxConstants.PROP_ALLOW_EXTERNAL_APPS, true);
+        return true;
     }
 
     public boolean isFileShareReceiverDisabled() {
