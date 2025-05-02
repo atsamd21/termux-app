@@ -7,6 +7,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Handler;
@@ -1005,6 +1006,7 @@ public final class TerminalView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        /*
         if (mEmulator == null) {
             canvas.drawColor(0XFF000000);
         } else {
@@ -1018,7 +1020,8 @@ public final class TerminalView extends View {
 
             // render the text selection handles
             renderTextSelection();
-        }
+        }*/
+        canvas.drawColor(Color.parseColor("#131313"));
     }
 
     public TerminalSession getCurrentSession() {

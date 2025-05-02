@@ -25,9 +25,15 @@ import com.termux.shared.termux.shell.command.environment.TermuxShellEnvironment
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -156,8 +162,11 @@ final class TermuxInstaller {
                     final byte[] buffer = new byte[8096];
                     final List<Pair<String, String>> symlinks = new ArrayList<>(50);
 
-                    final byte[] zipBytes = loadZipBytes();
-                    try (ZipInputStream zipInput = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
+                    File file = loadZipChunk(activity.getApplicationContext());
+
+                    FileInputStream stream = new FileInputStream(file);
+
+                    try (ZipInputStream zipInput = new ZipInputStream(stream)) {
                         ZipEntry zipEntry;
                         while ((zipEntry = zipInput.getNextEntry()) != null) {
                             if (zipEntry.getName().equals("SYMLINKS.txt")) {
@@ -203,6 +212,9 @@ final class TermuxInstaller {
                             }
                         }
                     }
+
+                    stream.close();
+                    file.delete();
 
                     if (symlinks.isEmpty())
                         throw new RuntimeException("No SYMLINKS.txt encountered");
@@ -381,6 +393,49 @@ final class TermuxInstaller {
         return getZip();
     }
 
+    public static File loadZipChunk(Context context) {
+        System.loadLibrary("termux-bootstrap");
+
+        try {
+            File file = new File(context.getCacheDir(), "temp");
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+
+            int i = 0;
+            while (true) {
+                try{
+                    byte[] chunk = getZipChunk(i);
+
+                    if (chunk.length == 0)
+                        break;
+
+                    try{
+                        fileOutputStream.write(chunk);
+                    }
+                    catch (IOException e) {
+                        break;
+                    }
+                }
+                catch (Exception e){
+                    break;
+                }
+
+                i++;
+            }
+
+            fileOutputStream.close();
+
+            return file;
+
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     public static native byte[] getZip();
 
+    private static native byte[] getZipChunk(int chunk);
 }
